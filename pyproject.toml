@@ -1,0 +1,96 @@
+[build-system]
+requires = ["setuptools>=68.0", "setuptools-scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clinical-trial-platform"
+version = "0.0.1"
+description = "Enterprise-grade Clinical Trial Data Intelligence Platform powered by Lakehouse, AI, and CDISC standards"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    {name = "Mingchao", email = "mingchao@example.com"}
+]
+license = {text = "MIT"}
+keywords = [
+    "clinical-trials",
+    "cdisc",
+    "data-engineering",
+    "lakehouse",
+    "ai-ml"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Healthcare Industry",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License"
+]
+
+dependencies = [
+    "pydantic>=2.5.0",
+    "faker>=20.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.0",
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages]
+find = {where = ["src"], include = ["*"]}
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+addopts = "-v --cov=src --cov-report=term-missing --cov-report=html"
+markers = [
+    "unit: unit tests",
+    "integration: integration tests",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+include = ["*.py", "*.pyi"]
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    ".eggs",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "N",      # pep8-naming
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "A",      # flake8-builtins
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "E731",   # do not assign lambda
+    "W191",   # indentation contains tabs
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
