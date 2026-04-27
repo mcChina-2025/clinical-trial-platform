@@ -25,7 +25,19 @@ class DemographyRecord(BaseModel):
         pattern=r"^[A-Z]{3}-\d{3}-\d{4}$"
     )
 
-    # ========== 第 2 部分：人口统计学信息 ==========
+    # ========== 第 2 部分：日期信息 ==========
+
+    BRTHDTC: date = Field(
+        ...,
+        description="出生日期"
+    )
+
+    RFSTDTC: date = Field(
+        ...,
+        description="首次给药日期"
+    )
+
+    # ========== 第 3 部分：人口统计学信息 ==========
 
     AGE: int = Field(
         ...,
@@ -44,18 +56,39 @@ class DemographyRecord(BaseModel):
         description="种族"
     )
 
+    # ========== 第 4 部分：治疗组信息 ==========
+
+    ARMCD: str = Field(
+        ...,
+        description="治疗组代码",
+        examples=["TRT", "PLACEBO"]
+    )
+
+    ARM: str = Field(
+        ...,
+        description="治疗组描述",
+        examples=["Treatment Group", "Placebo Group"]
+    )
+
 
 # ========== 测试代码 ==========
 if __name__ == "__main__":
     # 创建一个 DM 记录
     dm = DemographyRecord(
-        USUBJID="XYZ-001-0001",
-        AGE=35,
+        USUBJID="XYZ-001-0003",
+        BRTHDTC=date(1990, 5, 20),
+        RFSTDTC=date(2024, 1, 15),
+        AGE=33,
         SEX="M",
-        RACE="ASIAN"
+        RACE="ASIAN",
+        ARMCD="TRT",
+        ARM="Treatment Group"
     )
 
     print("DM 记录创建成功")
     print(f"受试者：{dm.USUBJID}")
+    print(f"出生日期：{dm.BRTHDTC}")
+    print(f"首次给药：{dm.RFSTDTC}")
     print(f"年龄：{dm.AGE}")
     print(f"性别：{dm.SEX}")
+    print(f"治疗组：{dm.ARM}")

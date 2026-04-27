@@ -4,6 +4,8 @@ DM 数据生成器 - 简化版
 用 Faker 生成随机的 DM 记录
 """
 
+from datetime import date
+
 from faker import Faker
 
 from src.data_generators.schemas.demography import DemographyRecord
@@ -12,7 +14,7 @@ from src.data_generators.schemas.demography import DemographyRecord
 class DMGenerator:
     """DM 数据生成器"""
 
-    def __init__(self, n_subjects: int = 10):
+    def __init__(self, n_subjects: int = 100):
         """
         初始化生成器
 
@@ -32,16 +34,38 @@ class DMGenerator:
         records = []
 
         for i in range(self.n_subjects):
+            # 生成出生日期（18-80 岁）
+            birth_date = self.fake.date_of_birth(minimum_age=18, maximum_age=80)
+
+            # 生成首次给药日期（2024年）
+            rfstdtc = self.fake.date_between(
+                start_date=date(2024, 1, 1),
+                end_date=date(2024, 12, 31)
+            )
+
+            # 计算年龄
+            age = rfstdtc.year - birth_date.year
+            if (rfstdtc.month, rfstdtc.day) < (birth_date.month, birth_date.day):
+                age -= 1
+
+            # 随机分配治疗组
+            arm_choice = self.fake.random_element(["TRT", "PLACEBO"])
+            arm_desc = "Treatment Group" if arm_choice == "TRT" else "Placebo Group"
+
             # 生成一条 DM 记录
             dm = DemographyRecord(
-                USUBJID=f"XYZ-001-{i+1:04d}",  # XYZ-001-0001, 0002, ...
-                AGE=self.fake.random_int(min=18, max=80),
+                USUBJID=f"XYZ-001-{i+1:04d}",
+                BRTHDTC=birth_date,
+                RFSTDTC=rfstdtc,
+                AGE=age,
                 SEX=self.fake.random_element(["M", "F"]),
                 RACE=self.fake.random_element([
                     "ASIAN",
                     "WHITE",
                     "BLACK OR AFRICAN AMERICAN"
-                ])
+                ]),
+                ARMCD=arm_choice,
+                ARM=arm_desc
             )
             records.append(dm)
 
