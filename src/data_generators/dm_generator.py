@@ -34,19 +34,31 @@ class DMGenerator:
         records = []
 
         for i in range(self.n_subjects):
-            # 生成出生日期（18-80 岁）
-            birth_date = self.fake.date_of_birth(minimum_age=18, maximum_age=80)
-
             # 生成首次给药日期（2024年）
             rfstdtc = self.fake.date_between(
                 start_date=date(2024, 1, 1),
                 end_date=date(2024, 12, 31)
             )
 
-            # 计算年龄
-            age = rfstdtc.year - birth_date.year
+            # 生成年龄（18-80 岁）
+            age = self.fake.random_int(min=18, max=80)
+
+            # 根据年龄和首次给药日期计算出生日期
+            birth_year = rfstdtc.year - age
+            # 随机生成月和日
+            birth_date = self.fake.date_between(
+                start_date=date(birth_year, 1, 1),
+                end_date=date(birth_year, 12, 31)
+            )
+
+            # 重新验证年龄（确保准确）
+            calculated_age = rfstdtc.year - birth_date.year
             if (rfstdtc.month, rfstdtc.day) < (birth_date.month, birth_date.day):
-                age -= 1
+                calculated_age -= 1
+
+            # 如果计算出的年龄不对，调整出生日期
+            if calculated_age != age:
+                birth_date = date(birth_year - 1, birth_date.month, birth_date.day)
 
             # 随机分配治疗组
             arm_choice = self.fake.random_element(["TRT", "PLACEBO"])
